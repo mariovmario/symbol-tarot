@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="An original symbol-card reflection experience." />
+  <title>Symbol Tarot</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <p class="eyebrow">Original Symbol Deck</p>
+      <h1>Symbol Tarot</h1>
+      <p class="intro">Draw a one-of-a-kind symbolic card for reflection. Your browser will not receive the same symbol combination twice.</p>
+    </header>
+
+    <section class="controls" aria-label="Card controls">
+      <label for="topic">Choose a focus</label>
+      <select id="topic">
+        <option value="personal growth">Personal growth</option>
+        <option value="love">Love</option>
+        <option value="money and work">Money and work</option>
+        <option value="future path">Future path</option>
+        <option value="wisdom">Wisdom</option>
+      </select>
+      <button id="draw-button" type="button">Draw My Card</button>
+    </section>
+
+    <section id="card" class="card empty" aria-live="polite">
+      <p class="placeholder">Your original symbol card will appear here.</p>
+    </section>
+
+    <button id="reset-button" class="text-button" type="button">Start a new journey</button>
+    <p class="note">For reflection and entertainment; this experience does not predict or guarantee outcomes.</p>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
