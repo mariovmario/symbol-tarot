@@ -1,6 +1,6 @@
 :root {
   color-scheme: dark;
-  --ink: #150d23;
+  --ink: #130a21;
   --violet: #32134e;
   --purple: #6d35a3;
   --gold: #f3c96b;
@@ -9,39 +9,41 @@
 }
 
 * { box-sizing: border-box; }
-
-body {
-  min-height: 100vh;
-  margin: 0;
-  background: radial-gradient(circle at 50% 0%, #55237e 0%, var(--ink) 55%);
-  color: var(--cream);
-  font-family: Georgia, "Times New Roman", serif;
-}
-
-.shell { width: min(720px, calc(100% - 32px)); margin: 0 auto; padding: 64px 0 48px; }
+body { min-height: 100vh; margin: 0; background: radial-gradient(circle at 50% 0%, #55237e 0%, var(--ink) 55%); color: var(--cream); font-family: Georgia, "Times New Roman", serif; }
+.shell { width: min(720px, calc(100% - 32px)); margin: 0 auto; padding: 54px 0 48px; }
 .hero { text-align: center; }
 .eyebrow { color: var(--gold); font-family: system-ui, sans-serif; font-size: .75rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
 h1 { margin: 8px 0; color: var(--gold); font-size: clamp(3rem, 11vw, 5.5rem); line-height: .95; }
-.intro { max-width: 560px; margin: 20px auto 36px; color: var(--muted); font-family: system-ui, sans-serif; line-height: 1.6; }
-
-.controls { display: grid; gap: 10px; max-width: 360px; margin: 0 auto 32px; font-family: system-ui, sans-serif; }
+.intro { max-width: 560px; margin: 20px auto 30px; color: var(--muted); font-family: system-ui, sans-serif; line-height: 1.6; }
+.controls { display: grid; gap: 10px; max-width: 360px; margin: 0 auto 30px; font-family: system-ui, sans-serif; }
 label { font-weight: 700; }
 select, button { border-radius: 10px; font: inherit; }
 select { padding: 13px; border: 1px solid #ad7ed0; background: #210f36; color: var(--cream); }
 button { cursor: pointer; }
-#draw-button { padding: 14px 18px; border: 1px solid var(--gold); background: var(--gold); color: #251236; font-weight: 800; }
-#draw-button:hover { background: #ffe29a; }
-
-.card { min-height: 350px; border: 2px solid var(--gold); border-radius: 22px; padding: 28px; background: linear-gradient(145deg, rgba(111, 47, 159, .85), rgba(23, 10, 36, .95)); box-shadow: 0 18px 55px rgba(0, 0, 0, .35); }
-.card.empty { display: grid; place-items: center; }
-.placeholder { color: var(--muted); font-family: system-ui, sans-serif; text-align: center; }
-.card-label { color: var(--gold); font-family: system-ui, sans-serif; font-size: .75rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
-.card h2 { margin: 10px 0 4px; font-size: clamp(2rem, 8vw, 3.4rem); }
-.inspiration { margin: 0 0 20px; color: var(--muted); font-family: system-ui, sans-serif; }
-.symbols { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; padding: 0; list-style: none; }
-.symbols li { padding: 8px 10px; border: 1px solid rgba(243, 201, 107, .65); border-radius: 999px; color: #fff0ba; font-family: system-ui, sans-serif; font-size: .9rem; }
-.reflection { font-size: 1.15rem; line-height: 1.7; }
-.text-button { display: block; margin: 20px auto; border: 0; background: transparent; color: var(--gold); text-decoration: underline; }
+#draw-button, .reveal-button { padding: 14px 18px; border: 1px solid var(--gold); background: var(--gold); color: #251236; font-weight: 800; }
+#draw-button:hover, .reveal-button:hover { background: #ffe29a; }
+.reading { display: grid; justify-items: center; gap: 16px; }
+.card-stage { padding: 0; border: 0; background: transparent; perspective: 1200px; }
+.physical-card { position: relative; display: grid; align-content: space-between; width: min(300px, 76vw); aspect-ratio: .62; overflow: hidden; border: 5px solid var(--gold); border-radius: 18px; padding: 22px; color: var(--cream); box-shadow: 0 22px 42px rgba(0, 0, 0, .46), inset 0 0 0 4px rgba(255, 239, 187, .25); transition: transform .7s ease, filter .35s ease; }
+.card-stage:hover .physical-card { transform: translateY(-5px) rotate(-1deg); filter: brightness(1.08); }
+.card-back { place-items: center; align-content: center; gap: 36px; background: radial-gradient(circle at 50% 40%, #7d4ab2, #240d3a 68%); }
+.card-back::before, .card-front::before { position: absolute; inset: 12px; border: 1px solid rgba(243, 201, 107, .8); border-radius: 10px; content: ""; pointer-events: none; }
+.card-back-moon { color: var(--gold); font-size: 8.5rem; line-height: .7; text-shadow: 0 0 18px rgba(243, 201, 107, .55); }
+.card-back-stars { color: var(--gold); font-size: 1.7rem; letter-spacing: .35em; }
+.card-front { background: linear-gradient(160deg, #4f2079, #1c0d30 78%); text-align: center; }
+.card-number { color: var(--gold); font-family: system-ui, sans-serif; font-size: .72rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+.card-title { z-index: 1; margin: 8px 0 4px; color: #fff5d8; font-size: clamp(1.45rem, 6vw, 2rem); line-height: 1.05; }
+.card-sky { z-index: 1; color: #ffe7a1; font-size: 3.8rem; line-height: 1; }
+.card-guide { z-index: 1; font-size: 5.5rem; filter: drop-shadow(0 5px 6px rgba(0, 0, 0, .35)); }
+.card-object-row { z-index: 1; display: flex; justify-content: center; gap: 18px; color: var(--gold); font-size: 2.7rem; }
+.card-landscape { z-index: 1; margin: 0; color: #e7d3ff; font-family: system-ui, sans-serif; font-size: .9rem; text-transform: uppercase; letter-spacing: .08em; }
+.card-energy { z-index: 1; color: var(--gold); font-size: 1.7rem; }
+.instruction { margin: 0; color: var(--muted); font-family: system-ui, sans-serif; text-align: center; }
+.reading-text { max-width: 600px; margin: 30px auto 0; border: 1px solid rgba(243, 201, 107, .65); border-radius: 16px; padding: 22px; background: rgba(39, 16, 60, .76); }
+.reading-text h2 { margin: 0 0 10px; color: var(--gold); }
+.reading-text p { margin: 0; font-family: system-ui, sans-serif; line-height: 1.7; }
+.symbols { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0; padding: 0; list-style: none; }
+.symbols li { padding: 7px 9px; border: 1px solid rgba(243, 201, 107, .65); border-radius: 999px; color: #fff0ba; font-family: system-ui, sans-serif; font-size: .86rem; }
+.text-button { display: block; margin: 22px auto; border: 0; background: transparent; color: var(--gold); text-decoration: underline; }
 .note { color: var(--muted); font-family: system-ui, sans-serif; font-size: .8rem; line-height: 1.5; text-align: center; }
-
-@media (max-width: 500px) { .shell { padding-top: 40px; } .card { padding: 22px; } }
+@media (max-width: 500px) { .shell { padding-top: 38px; } .physical-card { width: min(280px, 82vw); } }

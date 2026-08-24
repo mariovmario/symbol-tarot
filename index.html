@@ -12,7 +12,7 @@
     <header class="hero">
       <p class="eyebrow">Original Symbol Deck</p>
       <h1>Symbol Tarot</h1>
-      <p class="intro">Draw a one-of-a-kind symbolic card for reflection. Your browser will not receive the same symbol combination twice.</p>
+      <p class="intro">Draw a one-of-a-kind card, turn it over, and explore its symbols and reflection.</p>
     </header>
 
     <section class="controls" aria-label="Card controls">
@@ -24,13 +24,22 @@
         <option value="future path">Future path</option>
         <option value="wisdom">Wisdom</option>
       </select>
-      <button id="draw-button" type="button">Draw My Card</button>
+      <button id="draw-button" type="button">Draw a Card</button>
     </section>
 
-    <section id="card" class="card empty" aria-live="polite">
-      <p class="placeholder">Your original symbol card will appear here.</p>
+    <section class="reading" aria-live="polite">
+      <button id="card-stage" class="card-stage" type="button" aria-label="Draw a card first">
+        <span id="physical-card" class="physical-card card-back">
+          <span class="card-back-stars">✦ ✧ ✦</span>
+          <span class="card-back-moon">☾</span>
+          <span class="card-back-stars">✦ ✧ ✦</span>
+        </span>
+      </button>
+      <p id="instruction" class="instruction">Choose a focus, then draw your card.</p>
+      <button id="reveal-button" class="reveal-button" type="button" hidden>Reveal My Reading</button>
     </section>
 
+    <section id="reading-text" class="reading-text" hidden></section>
     <button id="reset-button" class="text-button" type="button">Start a new journey</button>
     <p class="note">For reflection and entertainment; this experience does not predict or guarantee outcomes.</p>
   </main>
