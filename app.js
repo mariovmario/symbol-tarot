@@ -1,78 +1,16 @@
-const baseThemes = [
-  ["The Fool", ["beginning", "curiosity", "a choice that asks for courage"]], ["The Magician", ["agency", "skill", "using what you already have"]],
-  ["The High Priestess", ["intuition", "what has not yet been said", "inner knowledge"]], ["The Empress", ["nurturing", "abundance", "creative growth"]],
-  ["The Emperor", ["structure", "boundaries", "taking responsibility"]], ["The Lovers", ["connection", "alignment", "an honest choice"]],
-  ["The Chariot", ["direction", "willpower", "forward movement"]], ["Strength", ["courage", "self-respect", "gentle control"]],
-  ["The Hermit", ["reflection", "guidance", "space to hear yourself"]], ["Wheel of Fortune", ["change", "cycles", "a turning point"]],
-  ["Justice", ["truth", "accountability", "a decision with consequences"]], ["The Hanged Man", ["perspective", "pause", "seeing differently"]],
-  ["Death", ["release", "transition", "making room for change"]], ["Temperance", ["balance", "patience", "bringing opposites together"]],
-  ["The Tower", ["revelation", "disruption", "rebuilding honestly"]], ["The Star", ["hope", "healing", "renewal"]],
-  ["The Moon", ["uncertainty", "intuition", "what feels unclear"]], ["The Sun", ["clarity", "joy", "being seen"]],
-  ["Judgement", ["awakening", "a calling", "making peace with the past"]], ["The World", ["completion", "integration", "a chapter coming together"]]
-];
-const positions = [
-  { key:"past", label:"Card One · Past Influence", title:"Past Influence" },
-  { key:"present", label:"Card Two · Present Energy", title:"Present Energy" },
-  { key:"path", label:"Card Three · Possible Path", title:"Possible Path" }
-];
-const choices = {
-  sky: [["new moon","🌑"],["crescent moon","☾"],["full moon","🌕"],["eclipse","◉"],["golden sun","☀"],["seven stars","✦"],["storm cloud","☁"],["aurora","〰"]],
-  guide: [["owl","🦉"],["raven","🐦"],["moth","🦋"],["fox","🦊"],["wolf","🐺"],["serpent","🐍"],["deer","🦌"],["crane","🕊"]],
-  object: [["key","🗝"],["lantern","🏮"],["mirror","🪞"],["compass","🧭"],["cup","🏆"],["thread","🧵"],["book","📖"],["coin","🪙"]],
-  landscape: [["forest path","Forest Path"],["mountain pass","Mountain Pass"],["stone gate","Stone Gate"],["river crossing","River Crossing"],["tower","Tower"],["garden","Garden"],["shoreline","Shoreline"],["bridge","Bridge"]],
-  energy: [["wind","≈"],["rain","❈"],["flame","♨"],["water","≋"],["roots","⌇"],["lightning","ϟ"],["mist","☁"],["starlight","✧"]]
-};
-const usedKey = "symbol-tarot-used-cards";
-let spreadCards = [];
-let revealed = new Set();
-function choose(items){ return items[Math.floor(Math.random()*items.length)]; }
-function titleCase(value){ return value.replace(/\b\w/g,function(letter){return letter.toUpperCase();}); }
-function getUsed(){ try{return new Set(JSON.parse(localStorage.getItem(usedKey)||"[]"));}catch(e){return new Set();} }
-function saveUsed(used){ try{localStorage.setItem(usedKey,JSON.stringify(Array.from(used)));}catch(e){} }
-function makeCard(topic, position){
-  const seed=choose(baseThemes), symbols={sky:choose(choices.sky),guide:choose(choices.guide),object:choose(choices.object),landscape:choose(choices.landscape),energy:choose(choices.energy)};
-  const id=[seed[0],symbols.sky[0],symbols.guide[0],symbols.object[0],symbols.landscape[0],symbols.energy[0]].join("|");
-  return { id:id, position:position, title:"The "+titleCase(symbols.object[0])+" of the "+titleCase(symbols.landscape[0]), source:seed[0], theme:choose(seed[1]), symbols:symbols, topic:topic };
-}
-function drawUnique(topic,position,blocked){
-  const used=getUsed();
-  for(let i=0;i<1000;i++){ const card=makeCard(topic,position); if(!used.has(card.id)&&!blocked.has(card.id)){used.add(card.id);saveUsed(used);return card;} }
-  return makeCard(topic,position);
-}
-function symbolsList(card){ return [card.symbols.sky[0],card.symbols.guide[0],card.symbols.object[0],card.symbols.landscape[0],card.symbols.energy[0]].map(function(item){return "<li>"+item+"</li>";}).join(""); }
-function cardBack(){ return '<span class="card-back-stars">✦ ✧ ✦</span><span class="card-back-moon">☾</span><span class="card-back-stars">✦ ✧ ✦</span>'; }
-function cardFace(card){ const s=card.symbols; return '<span class="card-number">'+card.position.title+'</span><h2 class="card-title">'+card.title+'</h2><span class="card-sky">'+s.sky[1]+'</span><span class="card-guide">'+s.guide[1]+'</span><span class="card-object-row"><span>'+s.object[1]+'</span><span>'+s.energy[1]+'</span></span><p class="card-landscape">'+s.landscape[1]+'</p>'; }
-function meaning(card){
-  const s=card.symbols;
-  if(card.position.key==="past") return "You may have learned to be careful after a situation where trust, timing, or certainty felt difficult. The "+s.guide[0]+" suggests what you noticed quietly; the "+s.object[0]+" points to a lesson or resource you still carry. This past influence can protect you, but it may also make a new choice feel heavier than it needs to be. Consider: what are you still trying to protect yourself from?";
-  if(card.position.key==="present") return "Something may be asking for your honest attention now. The "+s.landscape[0]+" can represent a place between what is familiar and what comes next, while the "+s.sky[0]+" suggests you do not need every answer before taking one clear step. You may be waiting for perfect certainty when a direct question, boundary, or conversation could bring more clarity. Consider: what do you already know but have not said out loud?";
-  return "This card suggests a possible path if you keep moving with awareness. The "+s.energy[0]+" and "+s.object[0]+" point toward a practical action rather than a dramatic promise. You may not need to solve the whole future; you may only need to choose the next honest step. Consider: what small action would make your life feel more aligned with what you truly want?";
-}
-function renderSpread(){
-  const spread=document.getElementById("spread");
-  spread.innerHTML=spreadCards.map(function(card,index){return '<article class="card-panel"><span class="position">'+card.position.label+'</span><button type="button" class="card-button" data-index="'+index+'" aria-label="Reveal '+card.position.title+'"><span class="physical-card card-back" id="card-'+index+'">'+cardBack()+'</span></button><button class="reveal" id="reveal-'+index+'" type="button" data-index="'+index+'">Reveal this card</button><section class="meaning" id="meaning-'+index+'" hidden></section></article>';}).join("");
-  document.querySelectorAll(".card-button,.reveal").forEach(function(button){button.addEventListener("click",function(){revealCard(Number(button.dataset.index));});});
-}
-function revealCard(index){
-  if(revealed.has(index)) return;
-  const card=spreadCards[index];
-  document.getElementById("card-"+index).className="physical-card card-front";
-  document.getElementById("card-"+index).innerHTML=cardFace(card);
-  const panel=document.getElementById("meaning-"+index); panel.hidden=false; panel.innerHTML='<h2>'+card.position.title+'</h2><ul class="symbols">'+symbolsList(card)+'</ul><p><strong>'+card.title+'.</strong> '+meaning(card)+'</p>';
-  document.getElementById("reveal-"+index).hidden=true;
-  revealed.add(index);
-  document.getElementById("instruction").textContent=revealed.size===3?"All three cards are revealed. Read the story below.":"Reveal each card when you are ready. Each one has its own meaning.";
-  if(revealed.size===3) showStory();
-}
-function showStory(){
-  const past=spreadCards[0], present=spreadCards[1], path=spreadCards[2];
-  const story=document.getElementById("story"); story.hidden=false;
-  story.innerHTML='<h2>Your Story</h2><p>The first card suggests that you may carry a past lesson about <strong>'+past.theme+'</strong>. The second card brings attention to <strong>'+present.theme+'</strong> in your life now. Together, they can describe a moment where an old way of protecting yourself meets a current need for more honesty or movement. The third card points to a possible path through <strong>'+path.theme+'</strong>: not a guarantee, but an invitation to choose one grounded next step. Ask yourself: what would change if you trusted what you already know and acted on it with care?</p>';
-}
-function drawSpread(){
-  const topic=document.getElementById("topic").value, blocked=new Set();
-  spreadCards=positions.map(function(position){const card=drawUnique(topic,position,blocked);blocked.add(card.id);return card;});
-  revealed=new Set(); document.getElementById("story").hidden=true; document.getElementById("instruction").textContent="Your three cards are drawn. Reveal each card one at a time."; renderSpread();
-}
-document.getElementById("draw-button").addEventListener("click",drawSpread);
-document.getElementById("reset-button").addEventListener("click",function(){try{localStorage.removeItem(usedKey);}catch(e){} spreadCards=[];revealed=new Set();document.getElementById("spread").innerHTML="";document.getElementById("story").hidden=true;document.getElementById("instruction").textContent="Your journey has been reset. Choose a focus, then draw your three-card story.";});
+const baseThemes = [["The Fool",["beginning","curiosity","a choice that asks for courage"]],["The Magician",["agency","skill","using what you already have"]],["The High Priestess",["intuition","what has not yet been said","inner knowledge"]],["The Empress",["nurturing","abundance","creative growth"]],["The Emperor",["structure","boundaries","taking responsibility"]],["The Lovers",["connection","alignment","an honest choice"]],["The Chariot",["direction","willpower","forward movement"]],["Strength",["courage","self-respect","gentle control"]],["The Hermit",["reflection","guidance","space to hear yourself"]],["Wheel of Fortune",["change","cycles","a turning point"]],["Justice",["truth","accountability","a decision with consequences"]],["The Hanged Man",["perspective","pause","seeing differently"]],["Death",["release","transition","making room for change"]],["Temperance",["balance","patience","bringing opposites together"]],["The Tower",["revelation","disruption","rebuilding honestly"]],["The Star",["hope","healing","renewal"]],["The Moon",["uncertainty","intuition","what feels unclear"]],["The Sun",["clarity","joy","being seen"]],["Judgement",["awakening","a calling","making peace with the past"]],["The World",["completion","integration","a chapter coming together"]]];
+const positions=[{key:"past",label:"Card One · Past Influence",title:"Past Influence"},{key:"present",label:"Card Two · Present Energy",title:"Present Energy"},{key:"path",label:"Card Three · Possible Path",title:"Possible Path"}];
+const choices={sky:[["new moon","🌑"],["crescent moon","☾"],["full moon","🌕"],["eclipse","◉"],["golden sun","☀"],["seven stars","✦"],["storm cloud","☁"],["aurora","〰"]],guide:[["owl","🦉"],["raven","🐦"],["moth","🦋"],["fox","🦊"],["wolf","🐺"],["serpent","🐍"],["deer","🦌"],["crane","🕊"]],object:[["key","🗝"],["lantern","🏮"],["mirror","🪞"],["compass","🧭"],["cup","🏆"],["thread","🧵"],["book","📖"],["coin","🪙"]],landscape:[["forest path","Forest Path"],["mountain pass","Mountain Pass"],["stone gate","Stone Gate"],["river crossing","River Crossing"],["tower","Tower"],["garden","Garden"],["shoreline","Shoreline"],["bridge","Bridge"]],energy:[["wind","≈"],["rain","❈"],["flame","♨"],["water","≋"],["roots","⌇"],["lightning","ϟ"],["mist","☁"],["starlight","✧"]]};
+const usedKey="symbol-tarot-used-cards";let spreadCards=[];let revealed=new Set();
+function choose(items){return items[Math.floor(Math.random()*items.length)];}function titleCase(value){return value.replace(/\b\w/g,function(letter){return letter.toUpperCase();});}function getUsed(){try{return new Set(JSON.parse(localStorage.getItem(usedKey)||"[]"));}catch(e){return new Set();}}function saveUsed(used){try{localStorage.setItem(usedKey,JSON.stringify(Array.from(used)));}catch(e){}}
+function makeCard(topic,position){const seed=choose(baseThemes),symbols={sky:choose(choices.sky),guide:choose(choices.guide),object:choose(choices.object),landscape:choose(choices.landscape),energy:choose(choices.energy)},id=[seed[0],symbols.sky[0],symbols.guide[0],symbols.object[0],symbols.landscape[0],symbols.energy[0]].join("|");return{id:id,position:position,title:"The "+titleCase(symbols.object[0])+" of the "+titleCase(symbols.landscape[0]),theme:choose(seed[1]),symbols:symbols,topic:topic};}
+function drawUnique(topic,position,blocked){const used=getUsed();for(let i=0;i<1000;i++){const card=makeCard(topic,position);if(!used.has(card.id)&&!blocked.has(card.id)){used.add(card.id);saveUsed(used);return card;}}return makeCard(topic,position);}
+function symbolsList(card){return[card.symbols.sky[0],card.symbols.guide[0],card.symbols.object[0],card.symbols.landscape[0],card.symbols.energy[0]].map(function(item){return"<li>"+item+"</li>";}).join("");}
+function cardBack(){return'<span class="corner corner-a">❧</span><span class="corner corner-b">❧</span><span class="corner corner-c">❧</span><span class="corner corner-d">❧</span><span class="card-back-ornament"><span class="card-back-moon">☾</span><span class="card-back-star">✦ ✧ ✦</span></span>';}
+function cardFace(card){const s=card.symbols;return'<span class="card-number">'+card.position.title+'</span><h2 class="card-title">'+card.title+'</h2><span class="card-sky">'+s.sky[1]+'</span><span class="card-guide">'+s.guide[1]+'</span><span class="card-object-row"><span>'+s.object[1]+'</span><span>'+s.energy[1]+'</span></span><p class="card-landscape">'+s.landscape[1]+'</p>';}
+function meaning(card){const s=card.symbols;if(card.position.key==="past")return"You may have learned to be careful after a situation where trust, timing, or certainty felt difficult. The "+s.guide[0]+" suggests what you noticed quietly; the "+s.object[0]+" points to a lesson or resource you still carry. This past influence can protect you, but it may also make a new choice feel heavier than it needs to be. Consider: what are you still trying to protect yourself from?";if(card.position.key==="present")return"Something may be asking for your honest attention now. The "+s.landscape[0]+" can represent a place between what is familiar and what comes next, while the "+s.sky[0]+" suggests you do not need every answer before taking one clear step. You may be waiting for perfect certainty when a direct question, boundary, or conversation could bring more clarity. Consider: what do you already know but have not said out loud?";return"This card suggests a possible path if you keep moving with awareness. The "+s.energy[0]+" and "+s.object[0]+" point toward a practical action rather than a dramatic promise. You may not need to solve the whole future; you may only need to choose the next honest step. Consider: what small action would make your life feel more aligned with what you truly want?";}
+function renderSpread(){const spread=document.getElementById("spread");spread.innerHTML=spreadCards.map(function(card,index){return'<article class="card-panel"><span class="position">'+card.position.label+'</span><button type="button" class="card-button" data-index="'+index+'" aria-label="Reveal '+card.position.title+'"><span class="physical-card card-back" id="card-'+index+'">'+cardBack()+'</span></button><button class="reveal" id="reveal-'+index+'" type="button" data-index="'+index+'">Reveal this card</button><section class="meaning" id="meaning-'+index+'" hidden></section></article>';}).join("");document.querySelectorAll(".card-button,.reveal").forEach(function(button){button.addEventListener("click",function(){revealCard(Number(button.dataset.index));});});}
+function revealCard(index){if(revealed.has(index))return;const card=spreadCards[index];document.getElementById("card-"+index).className="physical-card card-front";document.getElementById("card-"+index).innerHTML=cardFace(card);const panel=document.getElementById("meaning-"+index);panel.hidden=false;panel.innerHTML='<h2>'+card.position.title+'</h2><ul class="symbols">'+symbolsList(card)+'</ul><p><strong>'+card.title+'.</strong> '+meaning(card)+'</p>';document.getElementById("reveal-"+index).hidden=true;revealed.add(index);document.getElementById("instruction").textContent=revealed.size===3?"All three cards are revealed. Read the story below.":"Reveal each card when you are ready. Each one has its own meaning.";if(revealed.size===3)showStory();}
+function showStory(){const past=spreadCards[0],present=spreadCards[1],path=spreadCards[2],story=document.getElementById("story");story.hidden=false;story.innerHTML='<h2>Your Story</h2><p>The first card suggests that you may carry a past lesson about <strong>'+past.theme+'</strong>. The second card brings attention to <strong>'+present.theme+'</strong> in your life now. Together, they can describe a moment where an old way of protecting yourself meets a current need for more honesty or movement. The third card points to a possible path through <strong>'+path.theme+'</strong>: not a guarantee, but an invitation to choose one grounded next step. Ask yourself: what would change if you trusted what you already know and acted on it with care?</p>';}
+function drawSpread(){const topic=document.getElementById("topic").value,blocked=new Set();spreadCards=positions.map(function(position){const card=drawUnique(topic,position,blocked);blocked.add(card.id);return card;});revealed=new Set();document.getElementById("story").hidden=true;document.getElementById("instruction").textContent="Your three cards are drawn. Reveal each card one at a time.";renderSpread();}
+document.getElementById("draw-button").addEventListener("click",drawSpread);document.getElementById("reset-button").addEventListener("click",function(){try{localStorage.removeItem(usedKey);}catch(e){}spreadCards=[];revealed=new Set();document.getElementById("spread").innerHTML="";document.getElementById("story").hidden=true;document.getElementById("instruction").textContent="Your journey has been reset. Choose a focus, then draw your three-card story.";});
